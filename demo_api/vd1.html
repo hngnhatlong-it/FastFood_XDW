@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Demo Thanh Toán QR</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f5f5f5;
+text-align:center;
+}
+
+.container{
+width:700px;
+margin:50px auto;
+}
+
+.products{
+display:flex;
+justify-content:space-around;
+margin-bottom:30px;
+}
+
+.product{
+background:white;
+padding:20px;
+border-radius:10px;
+width:180px;
+box-shadow:0 0 10px rgba(0,0,0,0.2);
+}
+
+button{
+background:#28a745;
+color:white;
+border:none;
+padding:8px 15px;
+border-radius:5px;
+cursor:pointer;
+margin-top:10px;
+}
+
+.delete{
+background:red;
+margin-left:10px;
+}
+
+.cart{
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.2);
+margin-top:20px;
+display:none;
+}
+
+#payment{
+display:none;
+margin-top:20px;
+}
+
+#success{
+color:green;
+font-size:20px;
+margin-top:10px;
+}
+
+#qr{
+margin-top:20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>Demo API Thanh Toán</h1>
+
+<div class="container">
+
+<div class="products">
+
+<div class="product">
+<h3>Laptop Gaming</h3>
+<p>15.000.000 VND</p>
+<button onclick="addToCart('Laptop Gaming',15000000)">Thêm</button>
+</div>
+
+<div class="product">
+<h3>Chuột Gaming</h3>
+<p>500.000 VND</p>
+<button onclick="addToCart('Chuột Gaming',500000)">Thêm</button>
+</div>
+
+<div class="product">
+<h3>Bàn phím Cơ</h3>
+<p>1.200.000 VND</p>
+<button onclick="addToCart('Bàn phím Cơ',1200000)">Thêm</button>
+</div>
+
+</div>
+
+<div class="cart" id="cart">
+
+<h2>🛒 Giỏ hàng</h2>
+
+<ul id="cartItems"></ul>
+
+<p><b>Tổng tiền:</b> <span id="total">0</span> VND</p>
+
+<p>Mã đơn hàng: <b id="orderId"></b></p>
+
+<button onclick="checkout()">Thanh toán</button>
+
+</div>
+
+<div id="payment">
+
+<h3>📱 Quét QR để thanh toán</h3>
+
+<p id="status"></p>
+
+<img id="qr" width="250">
+
+<br><br>
+
+<button id="confirm" onclick="confirmPayment()" style="display:none">
+Tôi đã thanh toán
+</button>
+
+<h3 id="success"></h3>
+
+</div>
+
+</div>
+
+<script>
+
+let total = 0
+let orderId = ""
+
+function addToCart(name,price){
+
+document.getElementById("cart").style.display="block"
+
+let li = document.createElement("li")
+
+li.innerHTML =
+name + " - " + price.toLocaleString() + " VND " +
+"<button class='delete' onclick='removeItem(this,"+price+")'>Xóa</button>"
+
+document.getElementById("cartItems").appendChild(li)
+
+total += price
+
+document.getElementById("total").innerText = total.toLocaleString()
+
+}
+
+function removeItem(button,price){
+
+let li = button.parentElement
+li.remove()
+
+total -= price
+
+if(total < 0){
+total = 0
+}
+
+document.getElementById("total").innerText = total.toLocaleString()
+
+}
+
+async function checkout(){
+
+if(total == 0){
+alert("Giỏ hàng trống")
+return
+}
+
+orderId = "DH" + Math.floor(Math.random()*100000)
+
+document.getElementById("orderId").innerText = orderId
+
+document.getElementById("payment").style.display="block"
+
+document.getElementById("status").innerHTML = "Đang tạo thanh toán..."
+
+let res = await fetch("http://localhost:3000/create-payment",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body: JSON.stringify({
+amount: total,
+orderId: orderId
+})
+})
+
+let data = await res.json()
+
+document.getElementById("status").innerHTML =
+"Quét QR để thanh toán đơn " + orderId
+
+document.getElementById("qr").src = data.qrCode
+
+document.getElementById("confirm").style.display="inline-block"
+
+}
+
+function confirmPayment(){
+
+document.getElementById("success").innerHTML =
+"✔ Thanh toán thành công"
+
+document.getElementById("status").innerHTML =
+"Đã nhận thanh toán cho đơn " + orderId
+
+document.getElementById("cartItems").innerHTML = ""
+
+document.getElementById("qr").src = ""
+
+total = 0
+
+document.getElementById("total").innerText = "0"
+
+document.getElementById("confirm").style.display="none"
+
+}
+
+</script>
+
+</body>
+</html>
