@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Lay code moi nhat
-      uses: actions/checkout@v4 # Cập nhật lên v4 cho mới
+      uses: actions/checkout@v4
 
     - name: Day file len host qua FTP
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4
@@ -16,6 +16,8 @@ jobs:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
+        # Đẩy nội dung bên trong folder backend lên
+        local-dir: ./be/ 
         server-dir: ./fastfood.is-best.net/htdocs/ 
         exclude: |
           **/.git*
