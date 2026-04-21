@@ -1,0 +1,26 @@
+name: Tu dong deploy len InfinityFree
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Lay code moi nhat
+      uses: actions/checkout@v4 # Cập nhật lên v4 cho mới
+
+    - name: Day file len host qua FTP
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        server-dir: ./fastfood.is-best.net/htdocs/ 
+        exclude: |
+          **/.git*
+          **/.git*/**
+          **/node_modules/**
+          **/vendor/**
+          .env
+          **/storage/*.php
