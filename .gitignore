@@ -1,24 +1,12 @@
-*.log
-.DS_Store
+# Bỏ qua thư mục node_modules của cả front-end và back-end
+node_modules/
+fe/node_modules/
+be/node_modules/
+
+# Bỏ qua các file cấu hình môi trường nhạy cảm
 .env
-.env.backup
-.env.production
-.phpactor.json
-.phpunit.result.cache
-/.fleet
-/.idea
-/.nova
-/.phpunit.cache
-/.vscode
-/.zed
-/auth.json
-/node_modules
-/public/build
-/public/hot
-/public/storage
-/storage/*.key
-/storage/pail
-/vendor
-Homestead.json
-Homestead.yaml
-Thumbs.db
+
+# Bỏ qua các file log hoặc cache
+npm-debug.log*
+yarn-error.log*
+.DS_Store
